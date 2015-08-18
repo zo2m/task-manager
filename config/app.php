@@ -143,6 +143,8 @@ return [
         TaskManager\Providers\AppServiceProvider::class,
         TaskManager\Providers\EventServiceProvider::class,
         TaskManager\Providers\RouteServiceProvider::class,
+        Prettus\Repository\Providers\RepositoryServiceProvider::class,
+        \TaskManager\Providers\TaskManagerRepositoryProvider::class,
 
     ],
 

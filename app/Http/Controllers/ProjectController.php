@@ -3,23 +3,25 @@
 namespace TaskManager\Http\Controllers;
 
 use Illuminate\Http\Request;
-use TaskManager\Services\ClientServices;
 
-class ClientController extends Controller
+use TaskManager\Http\Requests;
+use TaskManager\Repositories\InterfaceProjectRepository;
+use TaskManager\Services\ProjectServices;
+
+class ProjectController extends Controller
 {
 
+
     /**
-     * @var ClientServices
+     * @var ProjectServices
      */
-
-    private $service;
-
+    private $services;
 
 
-    public function __construct(ClientServices $service)
+    public function __construct(ProjectServices $services)
     {
-        //$this->repository = $repository;
-        $this->service = $service;
+
+        $this->services = $services;
     }
 
 
@@ -28,11 +30,9 @@ class ClientController extends Controller
      *
      * @return Response
      */
-
     public function index()
     {
-        //return $this->repository->all();
-        return $this->service->showAll();
+        return $this->services->showAll();
     }
 
 
@@ -44,9 +44,8 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->service->create($request->all());
+        return $this->services->create($request->all());
     }
-
 
     /**
      * Display the specified resource.
@@ -56,7 +55,7 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        return $this->service->show($id);
+        return $this->services->show($id);
     }
 
 
@@ -69,9 +68,8 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $this->service->update($request->all(), $id);
+        return $this->services->update($request->all(), $id);
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -81,6 +79,6 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-       $this->service->delete($id);
+        return $this->services->delete($id);
     }
 }

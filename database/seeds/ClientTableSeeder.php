@@ -11,7 +11,7 @@ class ClientTableSeeder extends Seeder
      */
     public function run()
     {
-        \TaskManager\Client::truncate();
-        factory(\TaskManager\Client::class, 10)->create();
+       // \TaskManager\Entities\Client::truncate();
+        factory(\TaskManager\Entities\Client::class, 10)->create();
     }
 }
