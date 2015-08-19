@@ -5,10 +5,10 @@ namespace TaskManager\Repositories;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface ProjectNoteRepository
- * @package namespace TaskManager\Repositories;
+ * Interface ProjectRepository
+ * @package namespace TaskManager\Repositories\Eloquent;
  */
-interface ProjectNoteRepository extends RepositoryInterface
+interface InterfaceProjectNoteRepository extends RepositoryInterface
 {
     //
 }

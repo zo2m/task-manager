@@ -1,16 +1,17 @@
 <?php
 
-namespace TaskManager\Repositories;
+namespace TaskManager\Repositories\Eloquent;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use TaskManager\Entities\ProjectNote;
+use TaskManager\Repositories\InterfaceProjectNoteRepository;
 
 /**
- * Class ProjectNoteRepositoryEloquent
+ * Class ProjectRepositoryEloquent
  * @package namespace TaskManager\Repositories;
  */
-class ProjectNoteRepositoryEloquent extends BaseRepository implements ProjectNoteRepository
+class ProjectNoteRepositoryEloquent extends BaseRepository implements InterfaceProjectNoteRepository
 {
     /**
      * Specify Model class name

@@ -23,6 +23,17 @@ Route::get('client/{id}', 'ClientController@show');
 Route::delete('client/{id}', 'ClientController@destroy');
 Route::put('client/{id}', 'ClientController@update');
 
+
+//Rotas para as anotações dos projetos
+
+Route::get('project/notes', 'ProjectNoteController@index');
+Route::post('project', 'ProjectController@store');
+Route::get('project/{id}/notes/{noteId}', 'ProjectNoteController@show');
+Route::get('project/{id}/notes', 'ProjectNoteController@showAllNotesFromProject');
+Route::delete('project/{id}/notes/{noteId}', 'ProjectNoteController@destroy');
+Route::put('project/{id}/notes/{noteId}', 'ProjectNoteController@update');
+
+
 //Rotas para manipulação das informações dos projetos
 
 Route::get('project', 'ProjectController@index');

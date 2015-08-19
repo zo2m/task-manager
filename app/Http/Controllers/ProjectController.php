@@ -5,7 +5,6 @@ namespace TaskManager\Http\Controllers;
 use Illuminate\Http\Request;
 
 use TaskManager\Http\Requests;
-use TaskManager\Repositories\InterfaceProjectRepository;
 use TaskManager\Services\ProjectServices;
 
 class ProjectController extends Controller
@@ -26,10 +25,10 @@ class ProjectController extends Controller
 
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+     * Mostra todos os projetos
+     * @return mixed
      */
+
     public function index()
     {
         return $this->services->showAll();
@@ -37,22 +36,23 @@ class ProjectController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
+     * Grava um projeto no banco de dados
+     * @param Request $request
+     * @return array|mixed
      */
+
     public function store(Request $request)
     {
         return $this->services->create($request->all());
     }
 
+
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
+     * Mostra um projeto com base em seu id
+     * @param $id
+     * @return mixed
      */
+
     public function show($id)
     {
         return $this->services->show($id);
@@ -60,23 +60,24 @@ class ProjectController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return Response
+     * Atualiza um projeto com base em seu id
+     * @param Request $request
+     * @param $id
+     * @return array|mixed
      */
+
     public function update(Request $request, $id)
     {
         return $this->services->update($request->all(), $id);
     }
 
+
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
+     * Apaga um projeto com base em seu id
+     * @param $id
+     * @return int
      */
+
     public function destroy($id)
     {
         return $this->services->delete($id);

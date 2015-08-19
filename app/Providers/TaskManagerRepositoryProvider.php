@@ -41,5 +41,11 @@ class TaskManagerRepositoryProvider extends ServiceProvider
             \TaskManager\Repositories\InterfaceProjectNoteRepository::class,
             \TaskManager\Repositories\Eloquent\ProjectNoteRepositoryEloquent::class
         );
+
+        $this->app->bind
+        (
+            \TaskManager\Repositories\InterfaceUserRepository::class,
+            \TaskManager\Repositories\Eloquent\UserRepositoryEloquent::class
+        );
     }
 }
