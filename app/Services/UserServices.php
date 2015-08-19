@@ -3,44 +3,54 @@
  * Created by PhpStorm.
  * User: alexandrecorrea
  * Date: 16/08/15
- * Time: 16:23
+ * Time: 14:43
  */
 
 namespace TaskManager\Services;
 
+
 use Prettus\Validator\Exceptions\ValidatorException;
-use TaskManager\Repositories\InterfaceProjectRepository;
-use TaskManager\Validators\ProjectValidator;
+use TaskManager\Repositories\InterfaceUserRepository;
+use TaskManager\Validators\UserValidator;
 
-class ProjectServices
+class UserServices
 {
-
     /**
-     * @param ProjectValidator $project
+     * Instancia métodos do repositório
+     * @var InterfaceUserRepository
      */
     protected $repository;
 
+
     /**
-     * @param InterfaceProjectRepository $project
+     * Instancia métodos dos validadores
+     * @var UserValidator
      */
     private $validator;
 
 
+    /**
+     * Classe construtora inicializar instancias de repositório e validadores
+     * @param InterfaceUserRepository $repository
+     * @param UserValidator $validator
+     *
+     */
 
-    public function __construct(InterfaceProjectRepository $repository, ProjectValidator $validator)
+    public function __construct(InterfaceUserRepository $repository, UserValidator $validator)
     {
         $this->repository = $repository;
         $this->validator = $validator;
     }
 
+
     /**
-     * Trás a listagem de todos os projetos com seus clientes, notas e usuários
+     * Trás todos a listagem de todos os clientes
      * @return mixed
      */
 
     public function showAll()
     {
-        return $this->repository->with(['user','notes', 'client'])->all();
+        return $this->repository->with(['project'])->all();
     }
 
 

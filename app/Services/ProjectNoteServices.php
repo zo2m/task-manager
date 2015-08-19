@@ -9,25 +9,24 @@
 namespace TaskManager\Services;
 
 use Prettus\Validator\Exceptions\ValidatorException;
-use TaskManager\Repositories\InterfaceProjectRepository;
-use TaskManager\Validators\ProjectValidator;
+use TaskManager\Repositories\InterfaceProjectNoteRepository;
+use TaskManager\Validators\ProjectNoteValidator;
 
-class ProjectServices
+
+class ProjectNoteServices
 {
 
     /**
-     * @param ProjectValidator $project
+     * @param ProjectNoteValidator $project
      */
     protected $repository;
 
-    /**
-     * @param InterfaceProjectRepository $project
-     */
+
     private $validator;
 
 
 
-    public function __construct(InterfaceProjectRepository $repository, ProjectValidator $validator)
+    public function __construct(InterfaceProjectNoteRepository $repository, ProjectNoteValidator $validator)
     {
         $this->repository = $repository;
         $this->validator = $validator;
@@ -40,7 +39,7 @@ class ProjectServices
 
     public function showAll()
     {
-        return $this->repository->with(['user','notes', 'client'])->all();
+        return $this->repository->with(['project'])->all();
     }
 
 
@@ -73,11 +72,11 @@ class ProjectServices
      * @return array|mixed
      */
 
-    public function update(array $data, $id)
+    public function update(array $data, $noteId)
     {
         try{
             $this->validator->with($data)->passesOrFail();
-            return $this->repository->update($data, $id);
+            return $this->repository->update($data, $noteId);
         }catch (ValidatorException $e)
         {
             return [
@@ -88,15 +87,15 @@ class ProjectServices
     }
 
 
-    /**
-     * Mostra apenas um cliente de acordo com seu ID
-     * @param $id
-     * @return mixed
-     */
 
-    public function show($id)
+    public function show($id, $noteId)
     {
-        return $this->repository->find($id);
+        return $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
+    }
+
+    public function showAllNotesFromProject($id)
+    {
+        return $this->repository->findWhere(['project_id'=>$id]);
     }
 
 
@@ -106,8 +105,8 @@ class ProjectServices
      * @return int
      */
 
-    public function delete($id)
+    public function delete($noteId)
     {
-        return $this->repository->delete($id);
+        return $this->repository->delete($noteId);
     }
 }
