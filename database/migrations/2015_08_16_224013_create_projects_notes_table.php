@@ -15,7 +15,7 @@ class CreateProjectsNotesTable extends Migration
         Schema::create('project_notes', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('project_id')->unsigned();
-            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->string('title');
             $table->text('note');
             $table->timestamps();

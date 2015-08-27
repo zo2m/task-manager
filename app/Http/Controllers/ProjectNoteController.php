@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use TaskManager\Http\Requests;
 use TaskManager\Services\ProjectNoteServices;
 
+
 class ProjectNoteController extends Controller
 {
 
@@ -19,7 +20,6 @@ class ProjectNoteController extends Controller
 
     public function __construct(ProjectNoteServices $services)
     {
-
         $this->services = $services;
     }
 
@@ -44,6 +44,7 @@ class ProjectNoteController extends Controller
 
     public function store(Request $request)
     {
+
         return $this->services->create($request->all());
     }
 
@@ -78,10 +79,11 @@ class ProjectNoteController extends Controller
      * Atualiza uma nota específica com base em seu id
      * @param Request $request
      * @param $noteId
+     * @param $id
      * @return array|mixed
      */
 
-    public function update(Request $request, $noteId)
+    public function update(Request $request, $id, $noteId)
     {
         return $this->services->update($request->all(), $noteId);
     }
@@ -90,10 +92,11 @@ class ProjectNoteController extends Controller
     /**
      * Apaga uma nota específica com base em seu id
      * @param $noteId
+     * @param $id
      * @return int
      */
 
-    public function destroy($noteId)
+    public function destroy($id, $noteId)
     {
         return $this->services->delete($noteId);
     }

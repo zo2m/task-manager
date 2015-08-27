@@ -24,14 +24,22 @@ Route::delete('client/{id}', 'ClientController@destroy');
 Route::put('client/{id}', 'ClientController@update');
 
 
+//Rotas para manupulação de informações de usuários
+
+Route::get('user', 'UserController@index');
+Route::post('user', 'UserController@store');
+Route::get('user/{id}', 'UserController@show');
+Route::delete('user/{id}', 'UserController@destroy');
+Route::put('user/{id}', 'UserController@update');
+
 //Rotas para as anotações dos projetos
 
 Route::get('project/notes', 'ProjectNoteController@index');
-Route::post('project', 'ProjectController@store');
-Route::get('project/{id}/notes/{noteId}', 'ProjectNoteController@show');
+Route::post('project/note', 'ProjectNoteController@store');
+Route::get('project/{id}/note/{noteId}', 'ProjectNoteController@show');
 Route::get('project/{id}/notes', 'ProjectNoteController@showAllNotesFromProject');
-Route::delete('project/{id}/notes/{noteId}', 'ProjectNoteController@destroy');
-Route::put('project/{id}/notes/{noteId}', 'ProjectNoteController@update');
+Route::delete('project/{id}/note/{noteId}', 'ProjectNoteController@destroy');
+Route::put('project/{id}/note/{noteId}', 'ProjectNoteController@update');
 
 
 //Rotas para manipulação das informações dos projetos
@@ -39,5 +47,6 @@ Route::put('project/{id}/notes/{noteId}', 'ProjectNoteController@update');
 Route::get('project', 'ProjectController@index');
 Route::post('project', 'ProjectController@store');
 Route::get('project/{id}', 'ProjectController@show');
+Route::get('project/verify/{id}', 'ProjectController@verify');
 Route::delete('project/{id}', 'ProjectController@destroy');
 Route::put('project/{id}', 'ProjectController@update');

@@ -20,7 +20,7 @@ class ProjectRepositoryEloquent extends BaseRepository implements InterfaceProje
      */
     public function model()
     {
-        return Project::class;
+       return Project::class;
     }
 
     /**

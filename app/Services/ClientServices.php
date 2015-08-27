@@ -8,7 +8,7 @@
 
 namespace TaskManager\Services;
 
-
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 use TaskManager\Repositories\InterfaceClientRepository;
 use TaskManager\Validators\ClientValidator;
@@ -62,10 +62,12 @@ class ClientServices
 
     public function create(array $data)
     {
-        try{
+        try
+        {
             $this->validator->with($data)->passesOrFail();
             return $this->repository->create($data);
-        }catch (ValidatorException $e)
+        }
+        catch (ValidatorException $e)
         {
             return [
                 'error' => true,
@@ -85,14 +87,32 @@ class ClientServices
 
     public function update(array $data, $id)
     {
-        try{
-            $this->validator->with($data)->passesOrFail();
-            return $this->repository->update($data, $id);
-        }catch (ValidatorException $e)
+
+        try
+        {
+            try
+            {
+                $this->validator->with($data)->passesOrFail();
+                return [
+                    'error'=>0,
+                    'message'=>'Dados atualizados com sucesso.',
+                    'data'=> $this->repository->update($data, $id)
+                ];
+
+            }
+            catch (ValidatorException $e)
+            {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
+        }
+        catch(ModelNotFoundException $e)
         {
             return [
-                'error' => true,
-                'message' => $e->getMessageBag()
+                'error' => $e->getMessage(),
+                'message' => 'O cliente que você quer atualizar não existe.'
             ];
         }
     }
@@ -106,7 +126,28 @@ class ClientServices
 
     public function show($id)
     {
-        return $this->repository->find($id);
+
+        try
+        {
+            try
+            {
+                return $this->repository->find($id);
+            }
+            catch (ValidatorException $e)
+            {
+                return [
+                    'error' => $e->getCode(),
+                    'message' => 'O cliente não existe.'
+                ];
+            }
+        }
+        catch(ModelNotFoundException $e)
+        {
+            return [
+                'error' => $e->getMessage(),
+                'message' => 'O Cliente não existe.'
+            ];
+        }
     }
 
 
@@ -118,6 +159,38 @@ class ClientServices
 
     public function delete($id)
     {
-        return $this->repository->delete($id);
+
+       try
+        {
+
+            try
+            {
+                if($this->repository->delete($id))
+                {
+                    return [
+                        'error'=>0,
+                        'message'=>'Projeto excluído com sucesso.'
+                    ];
+
+                };
+            }
+            catch (ValidatorException $e)
+            {
+                return [
+                    'error' => $e->getCode(),
+                    'message' => $e->getMessageBag()
+                ];
+            }
+
+        }
+        catch(ModelNotFoundException $e)
+        {
+            /*return [
+                'error' => $e->getMessage(),
+                'message' => 'Não foi possível excluir o cliente porque ele não existe.'
+            ];*/
+            echo 'Não foi possível excluir o cliente porque ele não existe.';
+        }
+
     }
 }

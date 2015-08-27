@@ -82,4 +82,10 @@ class ProjectController extends Controller
     {
         return $this->services->delete($id);
     }
+
+
+    public function verify($id)
+    {
+        return $this->services->verifyIfProjectExists($id);
+    }
 }
