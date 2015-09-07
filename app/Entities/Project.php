@@ -59,4 +59,30 @@ class Project extends Model implements Transformable
         return $this->belongsTo(Client::class);
     }
 
+
+    /**
+     * Cria um relacionamento entre os membros do projeto. Um projeto pode ter
+     * vários membros
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'project_members', 'project_id', 'member_id');
+    }
+
+
+    /**
+     * Cria um relacionamento entre um projeto e sua tarefa. Um projeto pode
+     * ter várias tarefas
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function projectTask()
+    {
+        return $this->hasMany(ProjectTask::class);
+    }
+
 }

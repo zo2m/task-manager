@@ -11,10 +11,10 @@ namespace TaskManager\Validators;
 
 use Prettus\Validator\LaravelValidator;
 
-class UserValidator extends LaravelValidator
+class ProjectMemberValidator extends LaravelValidator
 {
     protected $rules = [
-        'name' => 'required|max:255',
-        'email' => 'required|email'
+        'project_id' => 'required|integer',
+        'member_id' => 'required|integer'
     ];
 }

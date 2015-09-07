@@ -9,12 +9,16 @@
 namespace TaskManager\Services;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Prettus\Validator\Exceptions\ValidatorException;
 use TaskManager\Repositories\InterfaceClientRepository;
 use TaskManager\Validators\ClientValidator;
 
 class ClientServices
 {
+    //variável para armazenar os erros e exibir depois no formato json
+    var $error = array();
+
     /**
      * Instancia métodos do repositório
      * @var InterfaceClientRepository
@@ -64,14 +68,24 @@ class ClientServices
     {
         try
         {
-            $this->validator->with($data)->passesOrFail();
-            return $this->repository->create($data);
+            try
+            {
+                $this->validator->with($data)->passesOrFail();
+                return $this->repository->create($data);
+            }
+            catch (ValidatorException $e)
+            {
+                return [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+            }
         }
-        catch (ValidatorException $e)
+        catch(QueryException $e)
         {
-            return [
-                'error' => true,
-                'message' => $e->getMessageBag()
+            return[
+                'error' => $e->getCode(),
+                'message' => $e->getMessage()
             ];
         }
 
@@ -143,7 +157,7 @@ class ClientServices
         }
         catch(ModelNotFoundException $e)
         {
-            return [
+            return  [
                 'error' => $e->getMessage(),
                 'message' => 'O Cliente não existe.'
             ];
@@ -167,29 +181,36 @@ class ClientServices
             {
                 if($this->repository->delete($id))
                 {
-                    return [
-                        'error'=>0,
-                        'message'=>'Projeto excluído com sucesso.'
+                    $message = [
+                        'error'=>false,
+                        'message'=>'Cliente excluído com sucesso.'
                     ];
+
+                    echo json_encode($message);
 
                 };
             }
             catch (ValidatorException $e)
             {
-                return [
+                $error = [
                     'error' => $e->getCode(),
                     'message' => $e->getMessageBag()
                 ];
+
+                echo json_encode($error);
             }
 
         }
         catch(ModelNotFoundException $e)
         {
-            /*return [
-                'error' => $e->getMessage(),
-                'message' => 'Não foi possível excluir o cliente porque ele não existe.'
-            ];*/
-            echo 'Não foi possível excluir o cliente porque ele não existe.';
+
+           $error = [
+               'error' => false,
+               'message' => 'Não foi possível excluir o cliente porque ele não existe.'
+           ];
+
+            echo json_encode($error);
+
         }
 
     }

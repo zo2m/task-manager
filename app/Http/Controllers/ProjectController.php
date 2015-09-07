@@ -88,4 +88,34 @@ class ProjectController extends Controller
     {
         return $this->services->verifyIfProjectExists($id);
     }
+
+
+    /**
+     * Trás os membros do projeto
+     *
+     * @param $id
+     * @return array|mixed
+     */
+
+    public function members($id)
+    {
+        return $this->services->members($id);
+    }
+
+    public function addMembers(Request $request)
+    {
+        return $this->services->addMembers($request->all());
+    }
+
+    public function isMember($project_id, $member_id)
+    {
+        return $this->services->isMember($member_id, $project_id);
+    }
+
+    public function removeMember($project_id, $member_id)
+    {
+        return $this->services->removeMember($member_id, $project_id);
+    }
+
+
 }

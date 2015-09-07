@@ -28,9 +28,11 @@ Route::put('client/{id}', 'ClientController@update');
 
 Route::get('user', 'UserController@index');
 Route::post('user', 'UserController@store');
+Route::get('user/project', 'UserController@showAllUserWithProject');
 Route::get('user/{id}', 'UserController@show');
 Route::delete('user/{id}', 'UserController@destroy');
 Route::put('user/{id}', 'UserController@update');
+Route::get('user/{id}/member', 'UserController@member');
 
 //Rotas para as anotações dos projetos
 
@@ -50,3 +52,7 @@ Route::get('project/{id}', 'ProjectController@show');
 Route::get('project/verify/{id}', 'ProjectController@verify');
 Route::delete('project/{id}', 'ProjectController@destroy');
 Route::put('project/{id}', 'ProjectController@update');
+Route::get('project/{id}/members', 'ProjectController@members');
+Route::post('project/members/add', 'ProjectController@addMembers');
+Route::get('project/{projetc_id}/member/{member_id}', 'ProjectController@isMember');
+Route::delete('project/{projetc_id}/member/{member_id}', 'ProjectController@removeMember');

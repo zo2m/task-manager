@@ -50,4 +50,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return $this->hasMany(Project::class);
     }
+
+    /**
+     * Cria um relacionamento entre os membros de um projeto. Um membro
+     * pode ter vários projetos
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function projectsMember()
+    {
+        return $this->belongsToMany(Project::class, 'project_members', 'member_id', 'project_id');
+    }
+
+    public function isUser($id)
+    {
+        return $this->findOrNew($id);
+    }
+
+
 }

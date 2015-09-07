@@ -8,11 +8,11 @@
 
 namespace TaskManager\Services;
 
+use Illuminate\Database\QueryException;
 use Prettus\Validator\Exceptions\ValidatorException;
 use TaskManager\Repositories\InterfaceProjectNoteRepository;
 use TaskManager\Validators\ProjectNoteValidator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use TaskManager\Services\ProjectServices;
 
 class ProjectNoteServices
 {
@@ -62,26 +62,36 @@ class ProjectNoteServices
 
         try
         {
-            //se existir um projeto, cria nota, caso contrário gera erro
-            if($this->projects->verifyIfProjectExists($data['project_id'])==1)
+            try
             {
-                $this->validator->with($data)->passesOrFail();
-                return $this->repository->create($data);
+                //se existir um projeto, cria nota, caso contrário gera erro
+                if($this->projects->verifyIfProjectExists($data['project_id'])==1)
+                {
+                    $this->validator->with($data)->passesOrFail();
+                    return $this->repository->create($data);
+                }
+                else
+                {
+                    return [
+                        'error' => true,
+                        'message' => 'Não foi possível criar a nota porque o projeto não existe.'
+                    ];
+                }
+
             }
-            else
+            catch (ValidatorException $e)
             {
                 return [
                     'error' => true,
-                    'message' => 'Não foi possível criar a nota porque o projeto não existe.'
+                    'message' => $e->getMessageBag()
                 ];
             }
-
         }
-        catch (ValidatorException $e)
+        catch(QueryException $e)
         {
-            return [
-                'error' => true,
-                'message' => $e->getMessageBag()
+            return[
+                'error' => $e->getCode(),
+                'message' => $e->getMessage()
             ];
         }
 

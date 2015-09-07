@@ -22,4 +22,5 @@ class ProjectValidator extends LaravelValidator
         'due_date' => 'required'
     ];
 
+
 }
