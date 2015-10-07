@@ -32,6 +32,7 @@ class ProjectNoteServices
      * @param ProjectNoteValidator $validator
      * @param ProjectServices $projects
      */
+
     public function __construct(InterfaceProjectNoteRepository $repository, ProjectNoteValidator $validator, ProjectServices $projects)
     {
         $this->repository = $repository;
@@ -65,7 +66,7 @@ class ProjectNoteServices
             try
             {
                 //se existir um projeto, cria nota, caso contrário gera erro
-                if($this->projects->verifyIfProjectExists($data['project_id'])==1)
+                if($this->projects->verifyIfProjectExists($data['project_id']) == true)
                 {
                     $this->validator->with($data)->passesOrFail();
                     return $this->repository->create($data);
@@ -175,7 +176,7 @@ class ProjectNoteServices
 
     public function showAllNotesFromProject($id)
     {
-        if(count($this->repository->findWhere(['project_id'=>$id]))<>0)
+        if(count($this->repository->findWhere(['project_id'=>$id])))
         {
             return $this->repository->findWhere(['project_id'=>$id]);
         }

@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'model' => TaskManager\User::class,
+    'model' => TaskManager\Entities\User::class,
 
     /*
     |--------------------------------------------------------------------------

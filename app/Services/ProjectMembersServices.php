@@ -182,7 +182,7 @@ class ProjectMembersServices
 
         //se a consulta trouxer algum valor, o membro já participa do projeto.
 
-        if (count($this->repository->findWhere(['project_id' => $project_id, 'member_id' => $member_id])) > 0)
+        if (count($this->repository->findWhere(['project_id' => $project_id, 'member_id' => $member_id])))
         {
             return [
                     'error' => true,

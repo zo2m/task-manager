@@ -11,48 +11,63 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function ()
+{
     return view('welcome');
 });
 
-//Rotas para manupulação de informações de clientes
 
-Route::get('client', 'ClientController@index');
-Route::post('client', 'ClientController@store');
-Route::get('client/{id}', 'ClientController@show');
-Route::delete('client/{id}', 'ClientController@destroy');
-Route::put('client/{id}', 'ClientController@update');
+Route::post('oauth/access_token', function()
+{
+    return Response::json(Authorizer::issueAccessToken());
+});
 
 
-//Rotas para manupulação de informações de usuários
-
-Route::get('user', 'UserController@index');
-Route::post('user', 'UserController@store');
-Route::get('user/project', 'UserController@showAllUserWithProject');
-Route::get('user/{id}', 'UserController@show');
-Route::delete('user/{id}', 'UserController@destroy');
-Route::put('user/{id}', 'UserController@update');
-Route::get('user/{id}/member', 'UserController@member');
-
-//Rotas para as anotações dos projetos
-
-Route::get('project/notes', 'ProjectNoteController@index');
-Route::post('project/note', 'ProjectNoteController@store');
-Route::get('project/{id}/note/{noteId}', 'ProjectNoteController@show');
-Route::get('project/{id}/notes', 'ProjectNoteController@showAllNotesFromProject');
-Route::delete('project/{id}/note/{noteId}', 'ProjectNoteController@destroy');
-Route::put('project/{id}/note/{noteId}', 'ProjectNoteController@update');
+//Protege todas as rotas. Só haverá acesso quando o usuário estiver logado no sistema
+Route::group(['middleware' => 'oauth'], function()
+{
 
 
-//Rotas para manipulação das informações dos projetos
+    //Rotas para manupulação de informações de clientes. Pega todos os métodos listados no controller
+    Route::resource('client', 'ClientController', ['except' => ['create', 'edit']]);
 
-Route::get('project', 'ProjectController@index');
-Route::post('project', 'ProjectController@store');
-Route::get('project/{id}', 'ProjectController@show');
-Route::get('project/verify/{id}', 'ProjectController@verify');
-Route::delete('project/{id}', 'ProjectController@destroy');
-Route::put('project/{id}', 'ProjectController@update');
-Route::get('project/{id}/members', 'ProjectController@members');
-Route::post('project/members/add', 'ProjectController@addMembers');
-Route::get('project/{projetc_id}/member/{member_id}', 'ProjectController@isMember');
-Route::delete('project/{projetc_id}/member/{member_id}', 'ProjectController@removeMember');
+
+
+    //Rotas para manupulação de informações de usuários
+    Route::get('user/project', 'UserController@showAllUserWithProject');
+    Route::get('user/{id}/member', 'UserController@member');
+    Route::resource('user', 'UserController', ['except' => ['create', 'edit']]);
+    /*Route::group(['prefix' => 'user'], function()
+    {
+        Route::get('{id}', 'UserController@show');
+        Route::get('{id}/member', 'UserController@member');
+        Route::delete('{id}', 'UserController@destroy');
+        Route::put('{id}', 'UserController@update');
+        Route::post('user', 'UserController@store');
+    });*/
+
+    //agrupa as rotas de acordo com o prefixo project
+    Route::get('project/{id}/members', 'ProjectController@members');
+    Route::get('project/{id}/ismember', 'ProjectController@isMember');
+    Route::post('project/addmembers', 'ProjectController@addMembers');
+    Route::resource('project', 'ProjectController', ['except' => ['create', 'edit']]);
+
+    Route::group(['prefix' => 'project'], function()
+    {
+
+        //Rotas para as anotações dos projetos
+        Route::get('notes', 'ProjectNoteController@index');
+        Route::post('note', 'ProjectNoteController@store');
+        Route::get('{id}/note/{noteId}', 'ProjectNoteController@show');
+        Route::get('{id}/notes', 'ProjectNoteController@showAllNotesFromProject');
+        Route::delete('{id}/note/{noteId}', 'ProjectNoteController@destroy');
+        Route::put('{id}/note/{noteId}', 'ProjectNoteController@update');
+
+        Route::post('{id}/file', 'ProjectFileController@store');
+        Route::delete('{id}/file/{filename}', 'ProjectFileController@apagar');
+
+    });
+
+
+});
+

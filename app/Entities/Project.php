@@ -85,4 +85,16 @@ class Project extends Model implements Transformable
         return $this->hasMany(ProjectTask::class);
     }
 
+
+    /**
+     * Cria um relacionamento entre os projetos e seus arquivos
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function files()
+    {
+        return $this->hasMany(ProjectFile::class);
+    }
+
 }

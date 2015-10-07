@@ -2,12 +2,13 @@
 
 namespace TaskManager\Http\Controllers;
 
+use Validator;
 use Illuminate\Http\Request;
 use TaskManager\Http\Requests;
 use TaskManager\Services\ProjectServices;
 
 
-class ProjectController extends Controller
+class ProjectFileController extends Controller
 {
 
 
@@ -18,11 +19,10 @@ class ProjectController extends Controller
     private $repository;
 
 
+
     public function __construct(ProjectServices $services)
     {
-
         $this->services = $services;
-
     }
 
 
@@ -49,14 +49,41 @@ class ProjectController extends Controller
 
 
     /**
-     * Grava um projeto no banco de dados
+     * Faz upload de arquivos
      * @param Request $request
      * @return array|mixed
      */
 
     public function store(Request $request)
     {
-        return $this->services->create($request->all());
+
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'file' => 'required',
+            'description' => 'required',
+            'project_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails())
+        {
+            return $validator->messages();
+        }
+
+
+        $file = $request->file('file');
+
+        $extension = $file->getClientOriginalExtension();
+
+        $data['file'] = $file;
+        $data['extension'] = $extension;
+        $data['name'] = $request->name;
+        $data['description'] = $request->description;
+        $data['project_id'] = $request->project_id;
+
+        $this->services->createFile($data);
+
+
     }
 
 
@@ -93,50 +120,19 @@ class ProjectController extends Controller
      * @return int
      */
 
-    public function destroy($id)
+    public function destroy($filename)
     {
-        return $this->services->delete($id);
+        dd($filename);
+        return $this->services->deleteFile($name);
+    }
+
+    public function apagar($project_id, $filename)
+    {
+        return $this->services->deleteFile($project_id, $filename);
     }
 
 
-     /**
-     * Trás os membros do projeto
-     *
-     * @param $id
-     * @return array|mixed
-     */
 
-    public function members($id)
-    {
-        return $this->services->members($id);
-    }
-
-
-    /**
-     * Adicinoa membros ao projeto
-     *
-     * @param Request $request
-     * @return array|mixed
-     */
-
-    public function addMembers(Request $request)
-    {
-        return $this->services->addMembers($request->all());
-    }
-
-
-    /**
-     * Remove membro de um projeto
-     *
-     * @param $project_id
-     * @param $member_id
-     * @return int
-     */
-
-    public function removeMember($project_id, $member_id)
-    {
-        return $this->services->removeMember($member_id, $project_id);
-    }
 
 
 }

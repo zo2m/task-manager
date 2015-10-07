@@ -68,10 +68,23 @@ class ClientServices
     {
         try
         {
+            $retorno = $this->verifyIfClientExists($data);
+
             try
             {
-                $this->validator->with($data)->passesOrFail();
-                return $this->repository->create($data);
+                if($retorno == false)
+                {
+                    $this->validator->with($data)->passesOrFail();
+                    return $this->repository->create($data);
+                }
+                else
+                {
+                    return [
+                        'error' => true,
+                        'message' => 'Não foi possível criar o usuário porque o email já existe'
+                    ];
+                }
+
             }
             catch (ValidatorException $e)
             {
@@ -212,6 +225,25 @@ class ClientServices
             echo json_encode($error);
 
         }
+
+    }
+
+
+    /**
+     * Método para verificar se o usuário existe
+     *
+     * @param $data
+     * @return bool
+     */
+
+    private function verifyIfClientExists($data)
+    {
+
+        if(count($this->repository->findWhere(['email' => $data['email']])))
+        {
+            return true;
+        }
+        return false;
 
     }
 }

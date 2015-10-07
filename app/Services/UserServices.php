@@ -52,7 +52,9 @@ class UserServices
 
     public function showAllUserWithProject()
     {
+
         return $this->repository->with(['project'])->all();
+
     }
 
 
