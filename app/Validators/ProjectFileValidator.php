@@ -14,10 +14,10 @@ use Prettus\Validator\LaravelValidator;
 class ProjectFileValidator extends LaravelValidator
 {
     protected $rules = [
-        'name' => 'required',
-        'file'=> 'required',
+        'name' => 'required|max:255',
+        'file' => 'required|max:204800|mimes:jpeg,bmp,png,jpg,psd,mp3,xls,xlsx,doc,docx,pps,ppsx,pdf,eps,zip,rar,tif',
         'description' => 'required',
-        'project_id' => 'required|integer',
+        'project_id' => 'required|integer'
     ];
 
 

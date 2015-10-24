@@ -16,9 +16,8 @@ use TaskManager\Validators\ProjectValidator;
 use LucaDegasperi\OAuth2Server\Facades\Authorizer;
 use TaskManager\Services\AuthServices;
 
-//Para upload
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Contracts\Filesystem\Factory as Storage;
+
 
 class ProjectServices
 {
@@ -49,6 +48,10 @@ class ProjectServices
      * @var Storage
      */
     private $storage;
+    /**
+     * @var ProjectFileServices
+     */
+    private $upload_file;
 
 
     /**
@@ -60,14 +63,14 @@ class ProjectServices
      * @param UserServices $user
      */
 
-    public function __construct(InterfaceProjectRepository $repository, ProjectValidator $validator, ProjectMembersServices $member, UserServices $user, Filesystem $filesystem, Storage $storage)
+    public function __construct(InterfaceProjectRepository $repository, ProjectValidator $validator, ProjectMembersServices $member, UserServices $user, ProjectFileServices $upload_file, Filesystem $filesystem)
     {
         $this->repository = $repository;
         $this->validator = $validator;
         $this->member = $member;
         $this->user = $user;
+        $this->upload_file = $upload_file;
         $this->filesystem = $filesystem;
-        $this->storage = $storage;
     }
 
     /**
@@ -522,178 +525,47 @@ class ProjectServices
 
 
     /**
-     *
-     * Método para upload de arquivos de projeto
+     * Método para upload e persistência em banco de dados
      *
      * @param array $data
-     * @throws ValidatorException
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
 
     public function createFile(array $data)
     {
+        $is_owner_or_member = $this->checkProjectPermissions($data['project_id']);
 
-        try
+        if($is_owner_or_member == true)
         {
-            $is_owner_or_member = $this->checkProjectPermissions($data['project_id']);
-
-            if($is_owner_or_member == true)
-            {
-                $avaliables_extensions = array('txt', 'pdf', 'jpg', 'png', 'xls', 'xlsx', 'ppt', 'pptx', 'doc', 'docx', 'eps', 'tif', 'zip', 'rar', 'mp3', 'psd');
-
-                $avaliables_mime_types = array('image/bmp', 'image/x-windows-bmp', 'application/msword', 'application/postscript', 'application/x-compressed', 'application/x-gzip', 'image/jpeg', 'audio/mpeg3', 'video/mpeg','application/pdf', 'image/png', 'application/mspowerpoint','application/mspowerpoint', 'text/plain', 'application/msword','application/excel', 'application/x-msexcel', 'application/zip', 'multipart/x-zip');
-
-                //pega os dados do projeto e tira o presenter para trazer a entidade
-                $project = $this->repository->skipPresenter()->find($data['project_id']);
-
-                //caminho do arquivo
-                $path = $data['project_id'].'/'.$data['extension'].'/';
-
-                //mime type do arquivo
-                $file_mime_type = $this->filesystem->mimeType($data['file']);
-
-                //tamanho do arquivo
-                $file_size = $this->filesystem->size($data['file']);
-
-
-                $valid_extension = in_array($data['extension'], $avaliables_extensions) ? 1 : 0;
-
-                $valid_mime_type = in_array($file_mime_type, $avaliables_mime_types) ? 1 : 0;
-
-
-                dd($valid_mime_type);
-
-                //presiste os dados no banco
-                $projectFile = $project->files()->create($data);
-
-                //faz o upload do arquivo
-                $this->storage->put($path.$projectFile->id.".".$data['extension'], $this->filesystem->get($data['file']));
-
-
-
-                if($projectFile)
-                {
-                    echo 'Arquivo enviado com sucesso';
-                }
-
-            }
-            else
-            {
-                echo 'Você não tem permissão para enviar este arquivo para este projeto.';
-            }
-
-
+            return $this->upload_file->createFile($data);
         }
-        catch(ModelNotFoundException $e)
+        else
         {
-
-            /*return[
-                'error_log' => $e->getCode(),
-                'error_line' => $e->getLine(),
-                'error_file' => $e->getFile(),
-                'message_log' => $e->getMessage(),
-                'error' =>true,
-                'message' => 'Você precisa informar o projeto para o qual este arquivo deve ser enviado.'
-            ];*/
-
-            echo 'Projeto não informado ou não existe.';
-
+            echo 'Você não tem permissão para enviar este arquivo para este projeto.';
         }
 
     }
 
 
     /**
-     *
-     * Método para a exclusão de arquivos (físicos) e registro no banco de dados
+     * Método para exclusão de arquivo e registro no banco de dados
      *
      * @param $project_id
-     * @param $filename
+     * @param $file_id
      * @return array
      */
 
-    public function deleteFile($project_id, $filename)
+    public function deleteFile($project_id, $file_id)
     {
+        $is_owner_or_member = $this->checkProjectPermissions($project_id);
 
-        try
+        if($is_owner_or_member == true)
         {
-
-            //cria instância da entidade project_file
-            $file_data = new \TaskManager\Entities\ProjectFile();
-
-            //verifica se o registro existe na tabela
-            $info_file = $file_data->findOrFail($filename);
-
-            //Cria caminho para o arquivo
-            $path = 'projectfiles/' . $project_id . '/' . $info_file->extension . '/' . $info_file->id . '.' . $info_file->extension;
-
-            //verifica se o usuário é proprietário ou membro do projeto
-            $is_owner_or_member = $this->checkProjectPermissions($project_id);
-
-            //se for membro ou proprietário inicia o processo de exclusão do arquivo
-            if ($is_owner_or_member == true)
-            {
-
-                //verifica se o arquivo realmente existe
-                if (file_exists($path))
-                {
-
-                    //se existir, exclui o arquivo e o registro desse arquivo no banco de dados
-                    if ($this->filesystem->delete($path) and $file_data->destroy($info_file->id))
-                    {
-
-                        //retorna mensagem informando que tudo deu certo
-                        return [
-                            'error' => false,
-                            'message' => 'Arquivo excluído com sucesso'
-                        ];
-
-                    }
-
-                    //retorna erro caso algo dê errado
-                    return [
-                        'error' => true,
-                        'message' => 'Erro desconhecido, por favor contacte o administrador'
-                    ];
-
-                }
-
-                //se o arquivo não existir, retorna o erro
-                else
-                {
-
-                    return [
-                        'error' => true,
-                        'message' => 'Não foi possível excluir o arquivo porque ele não existe'
-                    ];
-
-                }
-
-            }
-
-            //se o usuário não for propietário nem membro do projeto, retorna erro
-            else
-            {
-
-                return[
-                    'error' => true,
-                    'message' => 'Você não tem permissão para excluir este arquivo.'
-                ];
-
-            }
+            return $this->upload_file->deleteFile($project_id, $file_id);
         }
-
-        //caso a consulta do registro retorne falso, informa o erro que o registro não existe no banco de dados
-        catch(ModelNotFoundException $e)
+        else
         {
-
-            return[
-               'error' => true,
-               'message' => 'O arquivo não existe.'
-           ];
-
+            echo 'Você não tem permissão para enviar este arquivo para este projeto.';
         }
-
 
     }
 

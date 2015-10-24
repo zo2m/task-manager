@@ -2,14 +2,17 @@
 
 namespace TaskManager\Http\Controllers;
 
+use TaskManager\Validators\ProjectFileValidator;
 use Validator;
 use Illuminate\Http\Request;
 use TaskManager\Http\Requests;
 use TaskManager\Services\ProjectServices;
 
+define('MAX_FILE_SIZE', 73360);
 
 class ProjectFileController extends Controller
 {
+
 
 
     /**
@@ -17,35 +20,18 @@ class ProjectFileController extends Controller
      */
 
     private $repository;
+    /**
+     * @var ProjectFileValidator
+     */
+    private $validator;
 
 
-
-    public function __construct(ProjectServices $services)
+    public function __construct(ProjectServices $services, ProjectFileValidator $validator)
     {
         $this->services = $services;
+        $this->validator = $validator;
     }
 
-
-    /**
-     * Mostra todos os projetos
-     * @return mixed
-     */
-
-    public function index()
-    {
-        return $this->services->showAll();
-    }
-
-
-    /**
-     * Mostra todos os projetos
-     * @return mixed
-     */
-
-    public function showAll()
-    {
-        return $this->services->showAll();
-    }
 
 
     /**
@@ -70,7 +56,6 @@ class ProjectFileController extends Controller
             return $validator->messages();
         }
 
-
         $file = $request->file('file');
 
         $extension = $file->getClientOriginalExtension();
@@ -87,42 +72,15 @@ class ProjectFileController extends Controller
     }
 
 
-    /**
-     * Mostra um projeto com base em seu id. Só exibe se o projeto se o usuário logado for
-     * proprietário do projeto
-     *
-     * @param $id
-     * @return mixed
-     */
-
-    public function show($id)
-    {
-        return $this->services->show($id);
-    }
-
 
     /**
-     * Atualiza um projeto com base em seu id
-     * @param Request $request
-     * @param $id
-     * @return array|mixed
-     */
-
-    public function update(Request $request, $id)
-    {
-        return $this->services->update($request->all(), $id);
-    }
-
-
-    /**
-     * Apaga um projeto com base em seu id
+     * Apaga um arquivo com base em seu id
      * @param $id
      * @return int
      */
 
     public function destroy($filename)
     {
-        dd($filename);
         return $this->services->deleteFile($name);
     }
 
