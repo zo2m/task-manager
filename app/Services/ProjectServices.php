@@ -290,16 +290,18 @@ class ProjectServices
             if($this->isProjectOwner($id) == false)
             {
                 return [
-                    'message' => 'Você não possue permissão para apagar este projeto',
+                    'message' => 'Você não possui permissão para apagar este projeto',
                 ];
             }
 
             try
             {
-                if($this->repository->delete($id))
+
+                //apaga o registro do projeto do banco e o diretório de projetos contento todos os arquivos
+                if($this->repository->delete($id) and $this->upload_file->deleteFilesProject($id))
                 {
                     return [
-                        'error'=>true,
+                        'error'=>false,
                         'message'=>'Projeto excluído com sucesso.'
                     ];
 

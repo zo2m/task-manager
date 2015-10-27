@@ -65,5 +65,11 @@ class TaskManagerRepositoryProvider extends ServiceProvider
             \TaskManager\Repositories\InterfaceProjectFileRepository::class,
             \TaskManager\Repositories\Eloquent\ProjectFileRepositoryEloquent::class
         );
+
+        $this->app->bind
+        (
+            \TaskManager\Repositories\InterfaceOauthClientsRepository::class,
+            \TaskManager\Repositories\Eloquent\OauthClientsRepositoryEloquent::class
+        );
     }
 }

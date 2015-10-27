@@ -58,6 +58,8 @@ class ProjectFileController extends Controller
 
         $file = $request->file('file');
 
+       // dd($file->getClientMimeType());
+
         $extension = $file->getClientOriginalExtension();
 
         $data['file'] = $file;

@@ -68,3 +68,11 @@ $factory->define(TaskManager\Entities\ProjectMembers::class, function (Faker\Gen
     ];
 });
 
+
+$factory->define(TaskManager\Entities\OauthClients::class, function (Faker\Generator $faker) {
+    return [
+        'id' => 'appid2',
+        'secret' => 'secret',
+        'name' => 'AngularAPP1'
+    ];
+});

@@ -84,7 +84,9 @@ class ProjectFileServices
             $file_mime_type = $this->filesystem->mimeType($data['file']);
 
             //tamanho do arquivo
-            $file_size = $this->filesystem->size($data['file'])/1024;
+            $file_size = round(($this->filesystem->size($data['file'])/1048576),2);
+
+            //dd($file_size);
 
             //chama o método que valida o arquivo
             $is_valid_file = $this->validateFile($file_size, $data['extension'], $file_mime_type);
@@ -143,13 +145,55 @@ class ProjectFileServices
     {
 
         //tipos de extensões permitidas
-        $avaliables_extensions = array('txt', 'pdf', 'jpg', 'png', 'xls', 'xlsx', 'ppt', 'pptx', 'doc', 'docx', 'eps', 'tif', 'zip', 'rar', 'mp3', 'psd');
+        $avaliables_extensions = array(
+            'txt',
+            'pdf',
+            'jpg',
+            'png',
+            'xls',
+            'xlsx',
+            'ppt',
+            'pptx',
+            'doc',
+            'docx',
+            'eps',
+            'tif',
+            'zip',
+            'rar',
+            'mp3',
+            'psd'
+        );
 
         //tipos de mime types permitidos
-        $avaliables_mime_types = array('image/bmp', 'image/x-windows-bmp', 'application/msword', 'application/postscript', 'application/x-compressed', 'application/x-gzip', 'image/jpeg', 'audio/mpeg3', 'video/mpeg','application/pdf', 'image/png', 'application/mspowerpoint','application/mspowerpoint', 'text/plain', 'application/msword','application/excel', 'application/x-msexcel', 'application/zip', 'multipart/x-zip');
+        $avaliables_mime_types = array(
+            'image/bmp',
+            'image/x-windows-bmp',
+            'application/msword',
+            'application/postscript',
+            'application/x-compressed',
+            'application/x-gzip',
+            'image/jpeg' ,
+            'image/psd',
+            'audio/mpeg3',
+            'video/mpeg',
+            'application/pdf',
+            'image/png',
+            'application/mspowerpoint',
+            'application/mspowerpoint',
+            'text/plain',
+            'application/msword',
+            'application/excel',
+            'application/x-msexcel',
+            'application/zip',
+            'multipart/x-zip',
+            'application/x-photoshop',
+            'image/photoshop',
+            'image/x-photoshop',
+            'image/vnd.adobe.photoshop'
+        );
 
         //tamanho máximo de arquivo para upload
-        $max_file_fize = 1024; //1MB
+        $max_file_fize = 3; //1MB
 
         //verifica se a extensão é permitida
         if(!in_array($extension, $avaliables_extensions))
@@ -164,15 +208,16 @@ class ProjectFileServices
         {
             return[
                 'error' => true,
-                'message' => 'Tipo de arquivo não permitido'
+                'message' => 'Tipo de arquivo (mime_type) não permitido'
             ];
         }
         //verifica se o tamanho do arquivo é permitido
         elseif($max_file_fize < $file_size)
         {
+
             return [
                 'error' => true,
-                'message' => 'Arquivo muito grande. Tamanho máximo permitido '. round($max_file_fize/1024,2) .'MB.'
+                'message' => 'Você está enviado um arquivo de '.$file_size.'MB. Tamanho máximo permitido: '. $max_file_fize .'MB.'
             ];
         }
 
@@ -270,6 +315,45 @@ class ProjectFileServices
 
         }
 
+
+    }
+
+
+    /**
+     * Método para a exclusão dos registros dos arquivos do projeto no banco de dados
+     * e exclusão do diretório do projeto
+     *
+     * @param $project_id
+     * @return array
+     */
+
+    public function deleteFilesProject($project_id)
+    {
+        try
+        {
+            //guarda o caminho do diretório
+            $path = 'projectfiles/' . $project_id;
+
+            //pesquisa todos os registos no banco que pertençam ao projeto
+            $project_files = $this->repository->findWhere(['project_id'=>$project_id]);
+
+            //faz um loop para a exclusão dos registros no banco
+            foreach ($project_files as $val)
+            {
+                $this->repository->delete($val['id']);
+            }
+
+            //apaga o diretório do projeto
+            $this->filesystem->deleteDirectory($path);
+
+        }
+        catch(ModelNotFoundException $e)
+        {
+            return[
+                'error' => true,
+                'message' => 'O arquivo não existe.'
+            ];
+        }
 
     }
 
