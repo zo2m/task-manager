@@ -27,7 +27,7 @@ class ProjectTask extends Model implements Transformable
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public  function project()
+    public function project()
     {
         return $this->belongsTo(Project::class);
     }
